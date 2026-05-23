@@ -1,0 +1,22 @@
+<!-- templates/signup.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Inscription - LITReview{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Sign Up</h1>
+
+<form method="post" class="auth-form">
+    {% csrf_token %}
+
+    <input class="input" type="text" name="username" placeholder="Username">
+    <input class="input" type="password" name="password1" placeholder="Password">
+    <input class="input" type="password" name="password2" placeholder="Confirm Password">
+
+    <div class="button-row center">
+        <a href="{% url 'landing' %}" class="btn">Go Back</a>
+        <button class="btn" type="submit">Sign Up</button>
+    </div>
+</form>
+{% endblock %}

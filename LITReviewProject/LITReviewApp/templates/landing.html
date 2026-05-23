@@ -1,0 +1,29 @@
+<!-- templates/landing.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Connexion - LITReview{% endblock %}
+
+{% block content %}
+<div class="landing-grid">
+    <section class="landing-column">
+        <h2>Sign Up Now</h2>
+        <a href="{% url 'signup' %}" class="btn btn-large">Sign Up</a>
+    </section>
+
+    <section class="landing-column">
+        <h2>Log In</h2>
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+
+            <input class="input" type="text" name="username" placeholder="Username">
+            <input class="input" type="password" name="password" placeholder="Password">
+
+            <div class="button-row">
+                <button class="btn" type="submit">Log In</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

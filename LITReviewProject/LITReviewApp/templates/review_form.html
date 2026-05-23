@@ -1,0 +1,126 @@
+<!-- templates/review_form.html -->
+
+{% extends "base.html" %}
+
+{% block title %}
+    {% if review %}
+        Edit Your Review
+    {% else %}
+        Create a Review
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if review %}
+        Edit Your Review
+    {% else %}
+        Create a Review
+    {% endif %}
+</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% if ticket %}
+        <section class="ticket-preview">
+            <p>You are posting in response to</p>
+
+            <div class="ticket-preview-inner">
+                <div class="card-header">
+                    <span>{{ ticket.user.username }} requested a review</span>
+                    <span>{{ ticket.time_created }}</span>
+                </div>
+
+                <h2 class="card-title">{{ ticket.title }}</h2>
+
+                {% if ticket.description %}
+                    <p class="card-text">{{ ticket.description }}</p>
+                {% endif %}
+
+                {% if ticket.image %}
+                    <img class="card-image" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                {% endif %}
+            </div>
+        </section>
+    {% else %}
+        <section class="form-section">
+            <h2 class="section-title">Book / Article</h2>
+
+            <div class="form-group">
+                <label for="id_ticket_title">Title</label>
+                <input
+                    class="input"
+                    type="text"
+                    id="id_ticket_title"
+                    name="ticket_title"
+                    value="{{ ticket_form.title.value|default:'' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="id_ticket_description">Description</label>
+                <textarea
+                    class="textarea"
+                    id="id_ticket_description"
+                    name="ticket_description"
+                >{{ ticket_form.description.value|default:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Image</label>
+                <label class="file-button">
+                    upload file
+                    <input type="file" name="ticket_image">
+                </label>
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="form-section">
+        <h2 class="section-title">Review</h2>
+
+        <div class="form-group">
+            <label for="id_headline">Headline</label>
+            <input
+                class="input"
+                type="text"
+                id="id_headline"
+                name="headline"
+                value="{{ review.headline|default:'' }}"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Rating</label>
+
+            <div class="rating-row">
+                {% for value in "012345" %}
+                    <label class="rating-option">
+                        <input
+                            type="radio"
+                            name="rating"
+                            value="{{ value }}"
+                            {% if review.rating|stringformat:"s" == value %}checked{% endif %}
+                        >
+                        - {{ value }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="id_body">Body</label>
+            <textarea
+                class="textarea"
+                id="id_body"
+                name="body"
+            >{{ review.body|default:'' }}</textarea>
+        </div>
+
+        <div class="button-row">
+            <button class="btn btn-large" type="submit">Submit</button>
+        </div>
+    </section>
+</form>
+{% endblock %}

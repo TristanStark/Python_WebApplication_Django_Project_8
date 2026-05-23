@@ -1,0 +1,60 @@
+<!-- templates/following.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Following - LITReview{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Follow New Users</h1>
+
+<form method="post" class="follow-form">
+    {% csrf_token %}
+
+    <input
+        class="input"
+        type="text"
+        name="username"
+        placeholder="username"
+    >
+
+    <button class="btn" type="submit">Submit</button>
+</form>
+
+<h2 class="table-title">Following</h2>
+
+<table class="user-table">
+    <tbody>
+        {% for followed_user in following %}
+            <tr>
+                <td>{{ followed_user.username }}</td>
+                <td class="action-cell">
+                    <form method="post" action="{% url 'unfollow' followed_user.id %}">
+                        {% csrf_token %}
+                        <button class="btn" type="submit">Unfollow</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">Vous ne suivez personne pour le moment.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2 class="table-title">Followers</h2>
+
+<table class="user-table">
+    <tbody>
+        {% for follower in followers %}
+            <tr>
+                <td>{{ follower.username }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td>Personne ne vous suit pour le moment.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

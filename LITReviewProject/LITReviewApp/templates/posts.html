@@ -1,0 +1,82 @@
+<!-- templates/posts.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Your Posts - LITReview{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Your Posts</h1>
+
+<section class="posts-list">
+    {% for post in posts %}
+        {% if post.content_type == "review" %}
+            <div class="card">
+                <div class="card-header">
+                    <span>You posted a review</span>
+                    <span>{{ post.time_created }}</span>
+                </div>
+
+                <div class="card-body">
+                    <h2 class="card-title">
+                        {{ post.headline }}
+                        <span class="rating">★★★★★</span>
+                    </h2>
+
+                    <p class="card-text">{{ post.body }}</p>
+
+                    {% if post.ticket %}
+                        <div class="nested-card">
+                            <p>Ticket - {{ post.ticket.user.username }}</p>
+                            <h3 class="card-title">{{ post.ticket.title }}</h3>
+
+                            {% if post.ticket.image %}
+                                <img
+                                    class="card-image"
+                                    src="{{ post.ticket.image.url }}"
+                                    alt="{{ post.ticket.title }}"
+                                >
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-actions">
+                    <a class="btn" href="{% url 'review_edit' post.id %}">Edit</a>
+
+                    <form method="post" action="{% url 'review_delete' post.id %}" class="inline-form">
+                        {% csrf_token %}
+                        <button class="btn" type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+
+        {% elif post.content_type == "ticket" %}
+            <div class="card">
+                <div class="card-header">
+                    <span>You posted a ticket</span>
+                    <span>{{ post.time_created }}</span>
+                </div>
+
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+
+                    {% if post.image %}
+                        <img class="card-image" src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% endif %}
+                </div>
+
+                <div class="card-actions">
+                    <a class="btn" href="{% url 'ticket_edit' post.id %}">Edit</a>
+
+                    <form method="post" action="{% url 'ticket_delete' post.id %}" class="inline-form">
+                        {% csrf_token %}
+                        <button class="btn" type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    {% empty %}
+        <p>Vous n’avez encore rien publié.</p>
+    {% endfor %}
+</section>
+{% endblock %}

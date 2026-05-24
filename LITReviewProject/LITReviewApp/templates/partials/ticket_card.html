@@ -1,26 +1,31 @@
 <!-- templates/partials/ticket_card.html -->
-
-<div class="card">
-    <div class="card-header">
-        <span>{{ ticket.user.username }} requested a review</span>
-        <span>{{ ticket.time_created }}</span>
+<div class="card modern-card ticket-card">
+    <div class="card-meta">
+        <span class="badge badge-ticket">Ticket</span>
+        <span>{{ ticket.user.username }} · {{ ticket.time_created }}</span>
     </div>
 
-    <div class="card-body">
-        <h2 class="card-title">{{ ticket.title }}</h2>
-
-        {% if ticket.description %}
-            <p class="card-text">{{ ticket.description }}</p>
-        {% endif %}
-
+    <div class="card-body card-horizontal">
         {% if ticket.image %}
             <img class="card-image" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+        {% else %}
+            <div class="image-placeholder">No image</div>
         {% endif %}
+
+        <div class="card-content">
+            <h2 class="card-title">{{ ticket.title }}</h2>
+
+            {% if ticket.description %}
+                <p class="card-text">{{ ticket.description }}</p>
+            {% else %}
+                <p class="card-text muted">No description provided.</p>
+            {% endif %}
+        </div>
     </div>
 
     {% if show_review_button %}
         <div class="card-actions">
-            <a class="btn" href="{% url 'review_create_for_ticket' ticket.id %}">
+            <a class="btn btn-primary btn-small" href="{% url 'review_create_for_ticket' ticket.id %}">
                 Post a Review
             </a>
         </div>

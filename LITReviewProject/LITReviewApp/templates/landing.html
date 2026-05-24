@@ -1,29 +1,52 @@
 <!-- templates/landing.html -->
-
 {% extends "base.html" %}
 
 {% block title %}Connexion - LITReview{% endblock %}
 
 {% block content %}
-<div class="landing-grid">
-    <section class="landing-column">
-        <h2>Sign Up Now</h2>
-        <a href="{% url 'signup' %}" class="btn btn-large">Sign Up</a>
-    </section>
+<section class="hero hero-auth">
+    <div class="hero-copy">
+        <p class="eyebrow">Welcome</p>
+        <h1>Discover reliable reviews for your next read.</h1>
+        <p class="muted">
+            Request reviews, publish your opinions, follow readers who inspire you
+            and build your personalized feed.
+        </p>
 
-    <section class="landing-column">
-        <h2>Log In</h2>
+        <div class="feature-list">
+            <span>Review Requests</span>
+            <span>Rated Reviews</span>
+            <span>Personalized Feed</span>
+        </div>
 
-        <form method="post" class="login-form">
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-large">Create Account</a>
+    </div>
+
+    <section class="panel auth-panel">
+        <div class="panel-heading">
+            <p class="eyebrow">Log In</p>
+            <h2>Log In</h2>
+        </div>
+
+        {% if error %}
+            <p class="form-error">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" class="stacked-form">
             {% csrf_token %}
 
-            <input class="input" type="text" name="username" placeholder="Username">
-            <input class="input" type="password" name="password" placeholder="Password">
+            <label class="field">
+                <span>Username</span>
+                <input class="input" type="text" name="username" placeholder="john_5679" autocomplete="username">
+            </label>
 
-            <div class="button-row">
-                <button class="btn" type="submit">Log In</button>
-            </div>
+            <label class="field">
+                <span>Password</span>
+                <input class="input" type="password" name="password" placeholder="••••••••" autocomplete="current-password">
+            </label>
+
+            <button class="btn btn-primary btn-block" type="submit">Log In</button>
         </form>
     </section>
-</div>
+</section>
 {% endblock %}

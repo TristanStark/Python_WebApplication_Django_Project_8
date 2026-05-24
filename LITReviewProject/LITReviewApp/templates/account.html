@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Account - LITReview{% endblock %}
+
+{% block content %}
+<section class="account-hero">
+    <div class="account-avatar-wrap">
+        {% if profile.profile_picture %}
+            <img
+                id="profile-picture-preview"
+                class="account-avatar"
+                src="{{ profile.profile_picture.url }}"
+                alt="{{ profile.public_name }}"
+            >
+        {% else %}
+            <div id="profile-picture-preview" class="account-avatar account-avatar-placeholder">
+                {{ request.user.username|slice:":10"|upper }}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="account-hero-content">
+        <p class="eyebrow">My Account</p>
+        <h1>{{ profile.public_name }}</h1>
+        <p class="muted">@{{ request.user.username }}</p>
+
+        {% if profile.short_bio %}
+            <p class="account-bio-preview">{{ profile.short_bio }}</p>
+        {% else %}
+            <p class="account-bio-preview muted">
+                Add a short bio to personalize your profile.
+            </p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.ticket_count }}</span>
+        <span class="stat-label">Tickets</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.review_count }}</span>
+        <span class="stat-label">Reviews</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.following_count }}</span>
+        <span class="stat-label">Following</span>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-value">{{ stats.followers_count }}</span>
+        <span class="stat-label">Followers</span>
+    </div>
+</section>
+
+<div class="account-grid">
+    <section class="panel">
+        <div class="panel-header">
+            <h2>Public Profile</h2>
+            <p>These informations can be displayed in your reviews and tickets.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="stack-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_profile">
+
+            {{ profile_form.non_field_errors }}
+
+            <div class="field">
+                <label for="{{ profile_form.display_name.id_for_label }}">Display Name</label>
+                {{ profile_form.display_name }}
+                {{ profile_form.display_name.errors }}
+            </div>
+
+            <div class="field">
+                <label for="{{ profile_form.short_bio.id_for_label }}">Short bio</label>
+                {{ profile_form.short_bio }}
+                <div class="field-help">
+                    <span>Maximum 500 characters.</span>
+                    <span id="bio-counter">0 / 500</span>
+                </div>
+                {{ profile_form.short_bio.errors }}
+            </div>
+
+            <div class="field">
+                <label for="{{ profile_form.website.id_for_label }}">Website</label>
+                {{ profile_form.website }}
+                {{ profile_form.website.errors }}
+            </div>
+
+            <div class="field">
+                <label for="{{ profile_form.profile_picture.id_for_label }}">Profile Picture</label>
+                {{ profile_form.profile_picture }}
+
+                {% if profile.profile_picture %}
+                    <label class="checkbox-line">
+                        <input type="checkbox" name="remove_profile_picture">
+                        Remove current photo
+                    </label>
+                {% endif %}
+
+                {{ profile_form.profile_picture.errors }}
+            </div>
+
+            <div class="button-row">
+                <button class="btn btn-primary" type="submit">Save Profile</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>Security</h2>
+            <p>Change your password without being logged out.</p>
+        </div>
+
+        <form method="post" class="stack-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="change_password">
+
+            {{ password_form.non_field_errors }}
+
+            <div class="field">
+                <label for="{{ password_form.old_password.id_for_label }}">Current Password</label>
+                {{ password_form.old_password }}
+                {{ password_form.old_password.errors }}
+            </div>
+
+            <div class="field">
+                <label for="{{ password_form.new_password1.id_for_label }}">New Password</label>
+                {{ password_form.new_password1 }}
+                {{ password_form.new_password1.errors }}
+            </div>
+
+            <div class="field">
+                <label for="{{ password_form.new_password2.id_for_label }}">Confirmation</label>
+                {{ password_form.new_password2 }}
+                {{ password_form.new_password2.errors }}
+            </div>
+
+            <div class="button-row">
+                <button class="btn btn-primary" type="submit">Change Password</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

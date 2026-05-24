@@ -1,5 +1,4 @@
 <!-- templates/ticket_form.html -->
-
 {% extends "base.html" %}
 
 {% block title %}
@@ -7,48 +6,79 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">
-    {% if ticket %}Edit Your Ticket{% else %}Create a Ticket{% endif %}
-</h1>
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Ticket</p>
+        <h1>{% if ticket %}Edit Your Ticket{% else %}Create a Ticket{% endif %}</h1>
+        <p class="muted">Request a review for a book or article. Add an image to make the ticket more identifiable.</p>
+    </div>
+</section>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" class="panel editor-panel">
     {% csrf_token %}
 
-    <div class="form-group">
-        <label for="id_title">Title</label>
-        <input
-            class="input"
-            type="text"
-            id="id_title"
-            name="title"
-            value="{{ ticket.title|default:'' }}"
-        >
-    </div>
+    {{ form.non_field_errors }}
 
-    <div class="form-group">
-        <label for="id_description">Description</label>
-        <textarea
-            class="textarea"
-            id="id_description"
-            name="description"
-        >{{ ticket.description|default:'' }}</textarea>
-    </div>
+    <div class="form-grid">
+        <div class="form-main">
+            <label class="field" for="{{ form.title.id_for_label }}">
+                <span>Title</span>
+                {{ form.title.errors }}
+                {{ form.title }}
+            </label>
 
-    <div class="form-group">
-        <label>Image</label>
+            <label class="field" for="{{ form.description.id_for_label }}">
+                <span>Description</span>
+                <small class="field-hint"><span id="description-counter">0</span> characters</small>
+                {{ form.description.errors }}
+                {{ form.description }}
+            </label>
 
-        {% if ticket.image %}
-            <img class="current-image" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
-        {% endif %}
+            <label class="field">
+                <span>Image</span>
+                {{ form.image.errors }}
+                <div class="file-drop">
+                    {{ form.image }}
+                    <span>Drop an image or click to choose a file</span>
+                </div>
+            </label>
+        </div>
 
-        <label class="file-button">
-            {% if ticket.image %}Upload New File{% else %}Upload File{% endif %}
-            <input type="file" name="image">
-        </label>
+        <aside class="form-preview">
+            <h2>Preview</h2>
+
+            {% if ticket and ticket.image %}
+                <img id="ticket-image-preview" class="preview-image" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+            {% else %}
+                <img id="ticket-image-preview" class="preview-image" src="" alt="" hidden>
+                <div class="preview-placeholder">No image selected</div>
+            {% endif %}
+
+            <p class="muted-small">
+                Tickets with an image and a clear description usually receive better responses.
+            </p>
+        </aside>
     </div>
 
     <div class="button-row">
-        <button class="btn btn-large" type="submit">Submit</button>
+        <a href="{% url 'posts' %}" class="btn btn-secondary">Cancel</a>
+        <button class="btn btn-primary btn-large" type="submit">Submit</button>
     </div>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const description = document.querySelector("#id_description");
+    const counter = document.querySelector("#description-counter");
+    if (description && counter) {
+        description.setAttribute("data-counter-target", "#description-counter");
+        counter.textContent = description.value.length;
+    }
+
+    const imageInput = document.querySelector("input[type='file'][name='image']");
+    if (imageInput) {
+        imageInput.setAttribute("data-preview", "#ticket-image-preview");
+    }
+</script>
 {% endblock %}

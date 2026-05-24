@@ -1,60 +1,88 @@
 <!-- templates/following.html -->
-
 {% extends "base.html" %}
 
 {% block title %}Following - LITReview{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Follow New Users</h1>
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Network</p>
+        <h1>Following</h1>
+        <p class="muted">Follow users whose tickets and reviews you want to see in your feed.</p>
+    </div>
 
-<form method="post" class="follow-form">
-    {% csrf_token %}
+    <div class="mini-stat">
+        <strong>{{ following|length }}</strong>
+        <span>subscriptions</span>
+    </div>
+</section>
 
-    <input
-        class="input"
-        type="text"
-        name="username"
-        placeholder="username"
-    >
+<section class="panel follow-panel">
+    <h2>Follow New Users</h2>
 
-    <button class="btn" type="submit">Submit</button>
-</form>
+    <form method="post" class="follow-form">
+        {% csrf_token %}
 
-<h2 class="table-title">Following</h2>
+        <label class="field grow">
+            <span>Username</span>
+            <input class="input" type="text" name="username" placeholder="ex: sarahj" autocomplete="off">
+        </label>
 
-<table class="user-table">
-    <tbody>
-        {% for followed_user in following %}
-            <tr>
-                <td>{{ followed_user.username }}</td>
-                <td class="action-cell">
-                    <form method="post" action="{% url 'unfollow' followed_user.id %}">
+        <button class="btn btn-primary" type="submit">Follow</button>
+    </form>
+</section>
+
+<div class="two-columns">
+    <section class="panel">
+        <div class="section-heading">
+            <h2>Following</h2>
+            <input class="input compact-input" type="search" placeholder="Filter..." data-live-search=".following-row">
+        </div>
+
+        <div class="user-list">
+            {% for follow in following %}
+                <div class="user-row following-row">
+                    <div class="avatar">{{ follow.username|first|upper }}</div>
+                    <div class="user-info">
+                        <strong>{{ follow.username }}</strong>
+                        <span>You are following this user</span>
+                    </div>
+
+                    <form method="post" action="{% url 'unfollow' follow.id %}">
                         {% csrf_token %}
-                        <button class="btn" type="submit">Unfollow</button>
+                        <button class="btn btn-secondary btn-small" type="submit">Unfollow</button>
                     </form>
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="2">Vous ne suivez personne pour le moment.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                </div>
+            {% empty %}
+                <div class="empty-state compact">
+                    <h3>No subscriptions</h3>
+                    <p>Add a user to personalize your feed.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
 
-<h2 class="table-title">Followers</h2>
+    <section class="panel">
+        <div class="section-heading">
+            <h2>Followers</h2>
+        </div>
 
-<table class="user-table">
-    <tbody>
-        {% for follower in followers %}
-            <tr>
-                <td>{{ follower.username }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td>Personne ne vous suit pour le moment.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <div class="user-list">
+            {% for follow in followers %}
+                <div class="user-row">
+                    <div class="avatar">{{ follow.username|first|upper }}</div>
+                    <div class="user-info">
+                        <strong>{{ follow.username }}</strong>
+                        <span>Follows you</span>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state compact">
+                    <h3>No followers</h3>
+                    <p>No one is following you yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
 {% endblock %}

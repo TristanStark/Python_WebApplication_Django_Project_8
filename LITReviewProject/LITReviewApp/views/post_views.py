@@ -1,12 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, get_user_model, login
-from django.contrib import messages
+from django.shortcuts import render
 
-from ..forms import TicketForm
-from ..models import Ticket, Review, UserFollows
-
-
+from ..models import Ticket, Review
 
 @login_required
 def posts(request):

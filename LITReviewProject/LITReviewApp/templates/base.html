@@ -1,24 +1,31 @@
 <!-- templates/base.html -->
-
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LITReview{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/litreview.css' %}">
 </head>
 <body>
-    <div class="page">
-        <header class="header">
-            <div class="header-title">LITReview</div>
+    <div class="app-shell">
+        <header class="site-header">
+            <a class="brand" href="{% if user.is_authenticated %}{% url 'feed' %}{% else %}{% url 'landing' %}{% endif %}">
+                <span class="brand-mark">LR</span>
+                <span>
+                    <strong>LITReview</strong>
+                    <small>Books, reviews & recommendations</small>
+                </span>
+            </a>
 
             {% if user.is_authenticated %}
-                <nav class="nav">
+                <nav class="nav" aria-label="Navigation principale">
                     <a href="{% url 'feed' %}">Feed</a>
                     <a href="{% url 'posts' %}">Posts</a>
                     <a href="{% url 'following' %}">Following</a>
+                    <a href="{% url 'account' %}">Account</a>
                     <form method="post" action="{% url 'logout' %}" class="inline-form">
                         {% csrf_token %}
                         <button type="submit" class="nav-button">Log out</button>
@@ -26,16 +33,61 @@
                 </nav>
             {% endif %}
         </header>
+
         {% if messages %}
-            <ul>
+            <aside class="messages" aria-label="Messages">
                 {% for message in messages %}
-                    <li>{{ message }}</li>
+                    <div class="message message-{{ message.tags|default:'info' }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="message-close" aria-label="Close message">×</button>
+                    </div>
                 {% endfor %}
-            </ul>
+            </aside>
         {% endif %}
-        <main class="content">
+
+        <main class="page-content">
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    <script>
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("message-close")) {
+                event.target.closest(".message").remove();
+            }
+        });
+
+        document.addEventListener("input", function (event) {
+            const target = event.target;
+
+            if (target.matches("[data-live-search]")) {
+                const selector = target.getAttribute("data-live-search");
+                const query = target.value.trim().toLowerCase();
+
+                document.querySelectorAll(selector).forEach(function (item) {
+                    item.hidden = query && !item.textContent.toLowerCase().includes(query);
+                });
+            }
+
+            if (target.matches("[data-counter-target]")) {
+                const counter = document.querySelector(target.getAttribute("data-counter-target"));
+                if (counter) {
+                    counter.textContent = target.value.length;
+                }
+            }
+
+            if (target.type === "file" && target.files && target.files[0]) {
+                const previewSelector = target.getAttribute("data-preview");
+                const preview = previewSelector ? document.querySelector(previewSelector) : null;
+
+                if (preview) {
+                    preview.src = URL.createObjectURL(target.files[0]);
+                    preview.hidden = false;
+                }
+            }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,3 +1,3 @@
-from .models import Review, Ticket, UserFollows
+from .models import Review, Ticket, UserFollows, UserProfile
 
-__all__ = ["Ticket", "UserFollows", "Review"]
+__all__ = ["Ticket", "UserFollows", "Review", "UserProfile"]

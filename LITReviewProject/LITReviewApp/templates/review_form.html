@@ -1,126 +1,127 @@
 <!-- templates/review_form.html -->
-
 {% extends "base.html" %}
 
 {% block title %}
-    {% if review %}
-        Edit Your Review
-    {% else %}
-        Create a Review
-    {% endif %}
+    {% if review %}Edit Your Review{% else %}Create a Review{% endif %}
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">
-    {% if review %}
-        Edit Your Review
-    {% else %}
-        Create a Review
-    {% endif %}
-</h1>
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Review</p>
+        <h1>{% if review %}Edit Your Review{% else %}Create a Review{% endif %}</h1>
+        <p class="muted">Publish a short, readable, and useful review for other readers.</p>
+    </div>
+</section>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" class="review-layout">
     {% csrf_token %}
 
-    {% if ticket %}
-        <section class="ticket-preview">
-            <p>You are posting in response to</p>
-
-            <div class="ticket-preview-inner">
-                <div class="card-header">
-                    <span>{{ ticket.user.username }} requested a review</span>
-                    <span>{{ ticket.time_created }}</span>
+    <div class="review-main">
+        {% if ticket %}
+            <section class="panel">
+                <div class="section-heading">
+                    <h2>Linked Ticket</h2>
+                    <span class="badge badge-ticket">In response</span>
                 </div>
 
-                <h2 class="card-title">{{ ticket.title }}</h2>
+                <div class="ticket-preview-card">
+                    {% if ticket.image %}
+                        <img class="card-image large" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                    {% endif %}
 
-                {% if ticket.description %}
-                    <p class="card-text">{{ ticket.description }}</p>
-                {% endif %}
+                    <div>
+                        <p class="muted-small">{{ ticket.user.username }} requested a review · {{ ticket.time_created }}</p>
+                        <h3>{{ ticket.title }}</h3>
+                        {% if ticket.description %}
+                            <p>{{ ticket.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        {% else %}
+            <section class="panel">
+                <div class="section-heading">
+                    <h2>Book / Article</h2>
+                    <span class="badge badge-ticket">New ticket</span>
+                </div>
 
-                {% if ticket.image %}
-                    <img class="card-image" src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
-                {% endif %}
-            </div>
-        </section>
-    {% else %}
-        <section class="form-section">
-            <h2 class="section-title">Book / Article</h2>
-
-            <div class="form-group">
-                <label for="id_ticket_title">Title</label>
-                <input
-                    class="input"
-                    type="text"
-                    id="id_ticket_title"
-                    name="ticket_title"
-                    value="{{ ticket_form.title.value|default:'' }}"
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="id_ticket_description">Description</label>
-                <textarea
-                    class="textarea"
-                    id="id_ticket_description"
-                    name="ticket_description"
-                >{{ ticket_form.description.value|default:'' }}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Image</label>
-                <label class="file-button">
-                    upload file
-                    <input type="file" name="ticket_image">
+                <label class="field" for="id_ticket_title">
+                    <span>Title</span>
+                    <input class="input" type="text" id="id_ticket_title" name="ticket_title" value="{{ ticket_form.title.value|default:'' }}">
                 </label>
+
+                <label class="field" for="id_ticket_description">
+                    <span>Description</span>
+                    <textarea class="textarea" id="id_ticket_description" name="ticket_description">{{ ticket_form.description.value|default:'' }}</textarea>
+                </label>
+
+                <label class="field">
+                    <span>Image</span>
+                    <div class="file-drop">
+                        <input type="file" name="ticket_image" data-preview="#review-ticket-preview">
+                        <span>Add a cover or an image</span>
+                    </div>
+                </label>
+
+                <img id="review-ticket-preview" class="preview-image" src="" alt="" hidden>
+            </section>
+        {% endif %}
+
+        <section class="panel">
+            <div class="section-heading">
+                <h2>Your review</h2>
+                <span class="badge badge-review">Review</span>
+            </div>
+
+            <label class="field" for="id_headline">
+                <span>Headline</span>
+                <input class="input" type="text" id="id_headline" name="headline" value="{{ review.headline|default:'' }}" placeholder="Ex: Excellent and accessible">
+            </label>
+
+            <div class="field">
+                <span>Rating</span>
+
+                <div class="rating-selector">
+                    {% for value in "012345" %}
+                        <label>
+                            <input type="radio" name="rating" value="{{ value }}" {% if review.rating|stringformat:"s" == value %}checked{% endif %}>
+                            <span>{{ value }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <label class="field" for="id_body">
+                <span>Body</span>
+                <small class="field-hint"><span id="body-counter">0</span> characters</small>
+                <textarea class="textarea" id="id_body" name="body" data-counter-target="#body-counter" placeholder="Your review...">{{ review.body|default:'' }}</textarea>
+            </label>
+
+            <div class="button-row">
+                <a href="{% url 'feed' %}" class="btn btn-secondary">Cancel</a>
+                <button class="btn btn-primary btn-large" type="submit">Submit</button>
             </div>
         </section>
-    {% endif %}
+    </div>
 
-    <section class="form-section">
-        <h2 class="section-title">Review</h2>
-
-        <div class="form-group">
-            <label for="id_headline">Headline</label>
-            <input
-                class="input"
-                type="text"
-                id="id_headline"
-                name="headline"
-                value="{{ review.headline|default:'' }}"
-            >
-        </div>
-
-        <div class="form-group">
-            <label>Rating</label>
-
-            <div class="rating-row">
-                {% for value in "012345" %}
-                    <label class="rating-option">
-                        <input
-                            type="radio"
-                            name="rating"
-                            value="{{ value }}"
-                            {% if review.rating|stringformat:"s" == value %}checked{% endif %}
-                        >
-                        - {{ value }}
-                    </label>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="id_body">Body</label>
-            <textarea
-                class="textarea"
-                id="id_body"
-                name="body"
-            >{{ review.body|default:'' }}</textarea>
-        </div>
-
-        <div class="button-row">
-            <button class="btn btn-large" type="submit">Submit</button>
-        </div>
-    </section>
+    <aside class="panel tips-panel">
+        <h2>Tips</h2>
+        <ul class="tips-list">
+            <li>Summarize your opinion in a strong sentence.</li>
+            <li>Explain why you recommend, or not, the work.</li>
+            <li>Avoid major spoilers without warning.</li>
+        </ul>
+    </aside>
 </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const body = document.querySelector("#id_body");
+    const bodyCounter = document.querySelector("#body-counter");
+    if (body && bodyCounter) {
+        bodyCounter.textContent = body.value.length;
+    }
+</script>
 {% endblock %}

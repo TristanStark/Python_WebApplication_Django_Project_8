@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth import authenticate, get_user_model, login, logout as auth_logout
 
 
 def landing(request):
@@ -54,3 +54,8 @@ def signup(request):
         user = get_user_model().objects.create_user(username=username, password=password1)
         login(request, user)
         return redirect("feed")
+    
+
+def logout(request):
+    auth_logout(request)
+    return redirect("landing")

@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 
 from ..forms import TicketForm
@@ -30,9 +30,31 @@ def ticket_create(request):
 
 @login_required
 def ticket_edit(request, pk):
-    return render(request, "ticket_form.html", {"ticket": None})
+    ticket = get_object_or_404(Ticket, pk=pk, user=request.user)
 
+    if request.method == "POST":
+        form = TicketForm(request.POST, request.FILES, instance=ticket)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Ticket modifié avec succès.")
+            return redirect("posts")
+
+    else:
+        form = TicketForm(instance=ticket)
+
+    return render(
+        request,
+        "ticket_form.html",
+        {
+            "form": form,
+            "ticket": ticket,
+        },
+    )
 
 @login_required
 def ticket_delete(request, pk):
+    ticket = get_object_or_404(Ticket, pk=pk, user=request.user)
+    ticket.delete()
+    messages.success(request, "Ticket supprimé avec succès.")
     return redirect("posts")

@@ -1,24 +1,50 @@
 <!-- templates/feed.html -->
-
 {% extends "base.html" %}
 
 {% block title %}Feed - LITReview{% endblock %}
 
 {% block content %}
-<div class="top-actions">
-    <a href="{% url 'ticket_create' %}" class="btn btn-large">Request a Review</a>
-    <a href="{% url 'review_create' %}" class="btn btn-large">Post a Review</a>
-</div>
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Feed</p>
+        <h1>Your Reading Feed</h1>
+        <p class="muted">Tickets and reviews from people you follow, along with your own publications.</p>
+    </div>
+
+    <div class="hero-actions">
+        <a href="{% url 'ticket_create' %}" class="btn btn-primary">Request a Review</a>
+        <a href="{% url 'review_create' %}" class="btn btn-secondary">Post a Review</a>
+    </div>
+</section>
+
+<section class="toolbar">
+    <label class="search-box">
+        <span>Search the feed</span>
+        <input class="input" type="search" placeholder="Title, author, user..." data-live-search=".feed-item">
+    </label>
+
+    <div class="mini-stat">
+        <strong>{{ posts|length }}</strong>
+        <span>posts displayed</span>
+    </div>
+</section>
 
 <section class="feed-list">
     {% for post in posts %}
-        {% if post.content_type == "review" %}
-            {% include "partials/review_card.html" with review=post %}
-        {% elif post.content_type == "ticket" %}
-            {% include "partials/ticket_card.html" with ticket=post show_review_button=True %}
-        {% endif %}
+        <article class="feed-item">
+            {% if post.content_type == "review" %}
+                {% include "partials/review_card.html" with review=post %}
+            {% elif post.content_type == "ticket" %}
+                {% include "partials/ticket_card.html" with ticket=post show_review_button=True %}
+            {% endif %}
+        </article>
     {% empty %}
-        <p>Aucun post à afficher.</p>
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h2>No posts to display</h2>
+            <p>Follow other users or publish your first ticket to fill your feed.</p>
+            <a href="{% url 'following' %}" class="btn btn-primary">Find Readers</a>
+        </div>
     {% endfor %}
 </section>
 {% endblock %}

@@ -1,5 +1,12 @@
+from django.contrib.auth import (
+    authenticate,
+    get_user_model,
+    login,
+)
+from django.contrib.auth import (
+    logout as auth_logout,
+)
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, get_user_model, login, logout as auth_logout
 
 
 def landing(request):
@@ -11,11 +18,11 @@ def landing(request):
     print(f"Post data: {request.POST if request.method == 'POST' else 'N/A'}")
     print(f"Request method: {request.method}")
     print(f"Request path: {request.path}")
-    if (request.method == "GET"):
-        if (request.user.is_authenticated):
+    if request.method == "GET":
+        if request.user.is_authenticated:
             return redirect("feed")
         return render(request, "landing.html")
-    if (request.method == "POST"):
+    if request.method == "POST":
         # Login logic
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -32,11 +39,11 @@ def landing(request):
 def signup(request):
     print("Signup page accessed")
     print(f"User: {request.user}")
-    if (request.method == "GET"):
-        if (request.user.is_authenticated):
+    if request.method == "GET":
+        if request.user.is_authenticated:
             return redirect("feed")
         return render(request, "signup.html")
-    if (request.method == "POST"):
+    if request.method == "POST":
         # Signup logic
         username = request.POST.get("username")
         password1 = request.POST.get("password1")
@@ -51,10 +58,12 @@ def signup(request):
         if get_user_model().objects.filter(username=username).exists():
             print("Username already exists")
             return render(request, "signup.html", {"error": "Username already exists"})
-        user = get_user_model().objects.create_user(username=username, password=password1)
+        user = get_user_model().objects.create_user(
+            username=username, password=password1
+        )
         login(request, user)
         return redirect("feed")
-    
+
 
 def logout(request):
     auth_logout(request)

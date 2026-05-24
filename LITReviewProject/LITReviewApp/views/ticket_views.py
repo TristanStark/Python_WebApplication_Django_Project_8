@@ -1,11 +1,9 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib import messages
 
 from ..forms import TicketForm
-from ..models import Ticket, Review, UserFollows
-
-
+from ..models import Ticket
 
 
 @login_required
@@ -24,8 +22,7 @@ def ticket_create(request):
     else:
         form = TicketForm()
 
-    return render(request, "ticket_form.html", {"form": form})    
-    
+    return render(request, "ticket_form.html", {"form": form})
 
 
 @login_required
@@ -51,6 +48,7 @@ def ticket_edit(request, pk):
             "ticket": ticket,
         },
     )
+
 
 @login_required
 def ticket_delete(request, pk):

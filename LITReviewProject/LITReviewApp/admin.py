@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Ticket, UserFollows, Review
+
+from .models import Review, Ticket, UserFollows
+
 
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
@@ -21,9 +23,7 @@ class TicketAdmin(admin.ModelAdmin):
         "user__username",
     )
 
-    readonly_fields = (
-        "time_created",
-    )
+    readonly_fields = ("time_created",)
 
 
 @admin.register(UserFollows)
@@ -65,7 +65,4 @@ class ReviewAdmin(admin.ModelAdmin):
         "user__username",
     )
 
-    readonly_fields = (
-        "time_created",
-    )
-
+    readonly_fields = ("time_created",)

@@ -1,5 +1,7 @@
 from django import forms
+
 from ..models import Ticket
+
 
 class TicketForm(forms.ModelForm):
     class Meta:
@@ -33,10 +35,8 @@ class TicketForm(forms.ModelForm):
             raise forms.ValidationError(
                 "The description should not simply repeat the title."
             )
-        
+
         if title and len(title) < 5:
-            raise forms.ValidationError(
-                "The title must contain at least 5 characters."
-            )
+            raise forms.ValidationError("The title must contain at least 5 characters.")
 
         return cleaned_data

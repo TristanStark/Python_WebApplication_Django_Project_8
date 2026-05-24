@@ -1,10 +1,9 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
-from django.contrib.auth import authenticate, get_user_model, login
-from django.contrib import messages
 
-from ..forms import TicketForm, ReviewForm
-from ..models import Ticket, Review, UserFollows
+from ..forms import ReviewForm
+from ..models import Review, Ticket
 
 
 @login_required
@@ -17,15 +16,24 @@ def review_create(request):
             review.save()
             messages.success(request, "Review created successfully.")
             return redirect("posts")
-        return render(request, "review_form.html", {
-            "review": review_form,
-            "ticket": None,
-        })
+        return render(
+            request,
+            "review_form.html",
+            {
+                "review": review_form,
+                "ticket": None,
+            },
+        )
 
-    return render(request, "review_form.html", {
-        "review": None,
-        "ticket": None,
-    })
+    return render(
+        request,
+        "review_form.html",
+        {
+            "review": None,
+            "ticket": None,
+        },
+    )
+
 
 @login_required
 def review_create_for_ticket(request, ticket_id):
@@ -43,15 +51,23 @@ def review_create_for_ticket(request, ticket_id):
             review.save()
             messages.success(request, "Review created successfully.")
             return redirect("posts")
-        return render(request, "review_form.html", {
-            "review": review_form,
-            "ticket": ticket_id,
-        })
-        
-    return render(request, "review_form.html", {
-        "review": None,
-        "ticket": None,
-    })
+        return render(
+            request,
+            "review_form.html",
+            {
+                "review": review_form,
+                "ticket": ticket_id,
+            },
+        )
+
+    return render(
+        request,
+        "review_form.html",
+        {
+            "review": None,
+            "ticket": None,
+        },
+    )
 
 
 @login_required
@@ -68,14 +84,22 @@ def review_edit(request, pk):
             review_form.save()
             messages.success(request, "Review updated successfully.")
             return redirect("posts")
-        return render(request, "review_form.html", {
-            "review": review_form,
-            "ticket": review.ticket_id,
-        })
-    return render(request, "review_form.html", {
-        "review": None,
-        "ticket": None,
-    })
+        return render(
+            request,
+            "review_form.html",
+            {
+                "review": review_form,
+                "ticket": review.ticket_id,
+            },
+        )
+    return render(
+        request,
+        "review_form.html",
+        {
+            "review": None,
+            "ticket": None,
+        },
+    )
 
 
 @login_required
@@ -88,4 +112,3 @@ def review_delete(request, pk):
         except Review.DoesNotExist:
             messages.error(request, "Review does not exist.")
     return redirect("posts")
-

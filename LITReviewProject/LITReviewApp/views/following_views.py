@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.shortcuts import redirect, render
 
 from ..models import UserFollows
@@ -9,16 +10,30 @@ from ..models import UserFollows
 @login_required
 def following(request):
     if request.method == "POST":
-        username = request.POST.get("username")
+        username = request.POST.get("username", "").strip()
         if username:
             try:
                 followed_user = get_user_model().objects.get(username=username)
-                UserFollows.objects.create(
-                    user=request.user, followed_user=followed_user
-                )
-                messages.success(
-                    request, f"You are now following {followed_user.username}."
-                )
+                if followed_user == request.user:
+                    messages.error(request, "You cannot follow yourself.")
+                else:
+                    try:
+                        _, created = UserFollows.objects.get_or_create(
+                            user=request.user,
+                            followed_user=followed_user,
+                        )
+                    except IntegrityError:
+                        created = False
+
+                    if created:
+                        messages.success(
+                            request, f"You are now following {followed_user.username}."
+                        )
+                    else:
+                        messages.info(
+                            request,
+                            f"You are already following {followed_user.username}.",
+                        )
             except get_user_model().DoesNotExist:
                 messages.error(request, "User does not exist.")
         else:

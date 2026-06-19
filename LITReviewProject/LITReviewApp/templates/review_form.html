@@ -2,20 +2,23 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if review %}Edit Your Review{% else %}Create a Review{% endif %}
+    {% if is_editing %}Edit Your Review{% else %}Create a Review{% endif %}
 {% endblock %}
 
 {% block content %}
 <section class="page-hero">
     <div>
         <p class="eyebrow">Review</p>
-        <h1>{% if review %}Edit Your Review{% else %}Create a Review{% endif %}</h1>
+        <h1>{% if is_editing %}Edit Your Review{% else %}Create a Review{% endif %}</h1>
         <p class="muted">Publish a short, readable, and useful review for other readers.</p>
     </div>
 </section>
 
 <form method="post" enctype="multipart/form-data" class="review-layout">
     {% csrf_token %}
+
+    {{ ticket_form.non_field_errors }}
+    {{ review_form.non_field_errors }}
 
     <div class="review-main">
         {% if ticket %}
@@ -48,16 +51,19 @@
 
                 <label class="field" for="id_ticket_title">
                     <span>Title</span>
+                    {{ ticket_form.title.errors }}
                     <input class="input" type="text" id="id_ticket_title" name="ticket_title" value="{{ ticket_form.title.value|default:'' }}">
                 </label>
 
                 <label class="field" for="id_ticket_description">
                     <span>Description</span>
+                    {{ ticket_form.description.errors }}
                     <textarea class="textarea" id="id_ticket_description" name="ticket_description">{{ ticket_form.description.value|default:'' }}</textarea>
                 </label>
 
                 <label class="field">
                     <span>Image</span>
+                    {{ ticket_form.image.errors }}
                     <div class="file-drop">
                         <input type="file" name="ticket_image" data-preview="#review-ticket-preview">
                         <span>Add a cover or an image</span>
@@ -76,16 +82,18 @@
 
             <label class="field" for="id_headline">
                 <span>Headline</span>
-                <input class="input" type="text" id="id_headline" name="headline" value="{{ review.headline|default:'' }}" placeholder="Ex: Excellent and accessible">
+                {{ review_form.headline.errors }}
+                <input class="input" type="text" id="id_headline" name="headline" value="{{ review_form.headline.value|default:'' }}" placeholder="Ex: Excellent and accessible">
             </label>
 
             <div class="field">
                 <span>Rating</span>
+                {{ review_form.rating.errors }}
 
                 <div class="rating-selector">
                     {% for value in "012345" %}
                         <label>
-                            <input type="radio" name="rating" value="{{ value }}" {% if review.rating|stringformat:"s" == value %}checked{% endif %}>
+                            <input type="radio" name="rating" value="{{ value }}" {% if review_form.rating.value|stringformat:"s" == value %}checked{% endif %}>
                             <span>{{ value }}</span>
                         </label>
                     {% endfor %}
@@ -95,7 +103,8 @@
             <label class="field" for="id_body">
                 <span>Body</span>
                 <small class="field-hint"><span id="body-counter">0</span> characters</small>
-                <textarea class="textarea" id="id_body" name="body" data-counter-target="#body-counter" placeholder="Your review...">{{ review.body|default:'' }}</textarea>
+                {{ review_form.body.errors }}
+                <textarea class="textarea" id="id_body" name="body" data-counter-target="#body-counter" placeholder="Your review...">{{ review_form.body.value|default:'' }}</textarea>
             </label>
 
             <div class="button-row">
